@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+    <title>Calculator</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet">
+
+    <style>
+
+        body{
+            background:#f5f5f5;
+        }
+
+        .card{
+            border-radius:15px;
+        }
+
+        .order-item{
+            background:white;
+            padding:10px;
+            margin-bottom:10px;
+            border-radius:10px;
+            border:1px solid #ddd;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark bg-danger">
+
+    <div class="container">
+
+        <a class="navbar-brand fw-bold" href="#">
+            Cagawan Carinderia
+        </a>
+
+    </div>
+
+</nav>
+
+
+<section class="container py-5">
+
+    <div class="card shadow p-4">
+
+        <h1 class="text-center mb-4">
+            Total Cost Calculator
+        </h1>
+
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Choose Food
+            </label>
+
+            <select id="food"
+            class="form-select">
+
+                <option value="80">
+                    Chicken Adobo - ₱80
+                </option>
+
+                <option value="90">
+                    Sinigang - ₱90
+                </option>
+
+                <option value="75">
+                    Fried Chicken - ₱75
+                </option>
+
+                <option value="70">
+                    Menudo - ₱70
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Quantity
+            </label>
+
+            <input
+            type="number"
+            id="quantity"
+            class="form-control"
+            value="1"
+            min="1">
+
+        </div>
+
+
+        <div class="mb-3 mt-4">
+
+            <label class="form-label">
+                Your Email Address
+            </label>
+
+            <input
+            type="email"
+            id="customerEmail"
+            class="form-control"
+            placeholder="name@example.com">
+
+        </div>
+
+
+        <div class="d-flex gap-2 flex-wrap">
+
+            <button class="btn btn-danger"
+            onclick="calculateTotal()">
+
+                Add Order
+
+            </button>
+
+            <button class="btn btn-success"
+            onclick="placeOrder()">
+
+                Place Order
+
+            </button>
+
+            <button class="btn btn-secondary"
+            onclick="clearOrders()">
+
+                Clear Orders
+
+            </button>
+
+        </div>
+
+
+        <div class="mt-4">
+
+            <h4>
+                Order List
+            </h4>
+
+            <div id="orderList">
+
+                <p>
+                    No orders yet.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <h3 class="mt-4"
+        id="result">
+
+            Total: ₱0
+
+        </h3>
+
+    </div>
+
+</section>
+
+
+<script type="text/javascript"
+src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js">
+</script>
+
+<script type="text/javascript">
+
+(function(){
+
+    emailjs.init("YOUR_PUBLIC_KEY");
+
+})();
+
+
+let grandTotal = 0;
+let orders = [];
+
+
+function calculateTotal() {
+
+    let food =
+        document.getElementById("food");
+
+    let foodName =
+        food.options[food.selectedIndex].text;
+
+    let foodPrice =
+        parseInt(food.value);
+
+    let quantity =
+        parseInt(document.getElementById("quantity").value);
+
+    let total =
+        foodPrice * quantity;
+
+    grandTotal += total;
+
+    orders.push(
+        foodName + " x " + quantity + " = ₱" + total
+    );
+
+    displayOrders();
+
+}
+
+
+function displayOrders() {
+
+    let orderList =
+        document.getElementById("orderList");
+
+    orderList.innerHTML = "";
+
+    orders.forEach(function(order){
+
+        orderList.innerHTML +=
+        `
+        <div class="order-item">
+            ${order}
+        </div>
+        `;
+
+    });
+
+    document.getElementById("result").innerHTML =
+        "Total: ₱" + grandTotal;
+
+}
+
+
+function clearOrders() {
+
+    grandTotal = 0;
+
+    orders = [];
+
+    document.getElementById("orderList").innerHTML =
+        "<p>No orders yet.</p>";
+
+    document.getElementById("result").innerHTML =
+        "Total: ₱0";
+
+}
+
+
+function placeOrder() {
+
+    let customerEmail =
+        document.getElementById("customerEmail").value;
+
+    if(customerEmail === ""){
+
+        alert("Please enter your email.");
+
+        return;
+
+    }
+
+    if(orders.length === 0){
+
+        alert("Please add an order first.");
+
+        return;
+
+    }
+
+    let templateParams = {
+
+        customer_email: customerEmail,
+
+        orders: orders.join("\n"),
+
+        total: grandTotal
+
+    };
+
+    emailjs.send(
+        "YOUR_SERVICE_ID",
+        "YOUR_TEMPLATE_ID",
+        templateParams
+    )
+
+    .then(function(response){
+
+        alert("Order placed successfully!");
+
+        clearOrders();
+
+    },
+
+    function(error){
+
+        alert("Failed to send order.");
+
+    });
+
+}
+
+</script src="cagawan.js"></script>
+
+</body>
+</html>

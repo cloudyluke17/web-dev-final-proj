@@ -1,0 +1,21 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.hero-img {
+    height: 500px;
+    object-fit: cover;
+}
+
+.food-img {
+    height: 250px;
+    object-fit: cover;
+}
+
+.card {
+    border-radius: 15px;
+}
+
+footer {
+    margin-top: 50px;
+}
